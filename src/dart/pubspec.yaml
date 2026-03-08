@@ -1,0 +1,13 @@
+name: flutter_music_library
+description: Dart FFI bindings for MusicLibrary DLLs (Kugou + Netease Cloud Music).
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.3.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  ffi: ^2.1.2

@@ -10,6 +10,8 @@ ARCH_TO_FILE = {
 REPO = "2061360308/MusicLibrary"
 GITHUB_API = f"https://api.github.com/repos/{REPO}/releases/latest"
 
+base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),"src", "python" "MusicLibrary")
+
 def download_file(url, filename):
     resp = requests.get(url, stream=True)
     resp.raise_for_status()
@@ -41,7 +43,6 @@ def main(arch):
 
     # 删除 MusicLibrary/include 和 lib 目录
     import shutil
-    base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "MusicLibrary")
     for subdir in ["include", "lib"]:
         target = os.path.join(base_dir, subdir)
         if os.path.exists(target):
