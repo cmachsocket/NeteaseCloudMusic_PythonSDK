@@ -16,6 +16,7 @@ src/python/MusicLibrary/lib/
 src/python/MusicLibrary/include/
 src/python/tests/login/login_response.txt
 src/python/tests/login/loginStatus.json
+src/python/tests/ncm_login_cookie.json
 
 **/__pycache__/
 

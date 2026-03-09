@@ -17,21 +17,31 @@ __all__ = ["NeteaseCloudMusicApi", "NcmProcessEnv"]
 class NeteaseCloudMusicApi:
     def __init__(self, env: NcmProcessEnv = None):
         self.ncm = load_ncm()
+        self.cookie = {}
 
         _Engine()
         _NcmContextManager.init(env)
         self.env = env or _NcmContextManager._env
         self.ctx = _NcmContextManager.get_ctx()
         self._destroyed = False
+    
+    def set_cookie(self, cookie: dict):
+        self.cookie = cookie
 
-    def request(self, path, cookie="", env: NcmProcessEnv = None, **query) -> Response:
+    def request(self, path, cookie={}, env: NcmProcessEnv = None, **query) -> Response:
         if env is None:
             env = self.env
 
         # 剔除值为 None 的参数
-        print(f"Original query: {query}")
         query = {k: v for k, v in query.items() if v is not None}
         query = json.dumps(query) if query else ""
+
+        # 自动补全cookie（如果self.cookie有）
+        if not cookie and self.cookie:
+            cookie = self.cookie
+        
+        # 将cookie转换为JSON字符串
+        cookie = json.dumps(cookie) if cookie else "{}"
 
         path = to_bytes(path)
         query = to_bytes(query)
