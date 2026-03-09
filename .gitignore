@@ -1,11 +1,16 @@
 .venv/
+venv/
 build/
 dist/
 src/python/MusicLibrary.egg-info/
 
-windows-x64.zip
-windows-x86.zip
-windows-arm64.zip
+windows-x64*.zip
+windows-x86*.zip
+windows-arm64*.zip
+linux-x64*.zip
+linux-arm64*.zip
+macos-x64*.zip
+macos-arm64*.zip
 
 src/python/MusicLibrary/lib/
 src/python/MusicLibrary/include/

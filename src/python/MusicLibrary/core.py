@@ -1,4 +1,5 @@
 import os
+import sys
 import atexit
 import ctypes
 from ctypes import CDLL, Structure, c_char_p, c_void_p, c_int, POINTER
@@ -6,7 +7,17 @@ from .common import to_bytes
 from enum import Enum
 
 LIB_DIR = os.path.join(os.path.dirname(__file__), "lib")
-engine = CDLL(os.path.join(LIB_DIR, "engine.dll"))
+
+def get_lib_filename(base_name):
+    """根据操作系统获取对应的动态库文件名"""
+    if sys.platform == "win32":
+        return f"{base_name}.dll"
+    elif sys.platform == "darwin":
+        return f"lib{base_name}.dylib"
+    else:  # Linux and other Unix-like systems
+        return f"lib{base_name}.so"
+
+engine = CDLL(os.path.join(LIB_DIR, get_lib_filename("engine")))
 
 kugou = None
 ncm = None
@@ -86,7 +97,7 @@ class _NcmProcessEnv(Structure):
 def load_kugou():
     global kugou
     if kugou is None:
-        kugou = CDLL(os.path.join(LIB_DIR, "kugou_music_api.dll"))
+        kugou = CDLL(os.path.join(LIB_DIR, get_lib_filename("kugou_music_api")))
         kugou.kugou_init.restype = c_void_p
         kugou.kugou_init.argtypes = [POINTER(_KugouProcessEnv)]
 
@@ -112,7 +123,7 @@ def load_kugou():
 def load_ncm():
     global ncm
     if ncm is None:
-        ncm = CDLL(os.path.join(LIB_DIR, "ncm_music_api.dll"))
+        ncm = CDLL(os.path.join(LIB_DIR, get_lib_filename("ncm_music_api")))
         ncm.ncm_init.restype = c_void_p
         ncm.ncm_init.argtypes = [POINTER(_NcmProcessEnv)]
 
