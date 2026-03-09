@@ -22,7 +22,7 @@
 
 | 语言 | 状态 | 使用方式 | 用法介绍 |
 |------|------|----------|----------|
-| Python | 网易云：&emsp;✅ 已支持<br>酷狗音乐：✅ 已支持 | `pip install musiclibrary` | [README]() |
+| Python | 网易云：&emsp;✅ 已支持<br>酷狗音乐：✅ 已支持 | `pip install pymusiclibrary` | [README](./src/python/README.md) |
 | Dart | 网易云：&emsp;✅ 已支持<br>酷狗音乐：✅ 已支持 | `pubspec.yaml` 添加依赖 | [README]() |
 
 ## 🌟 特性

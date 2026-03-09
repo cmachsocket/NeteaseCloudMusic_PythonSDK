@@ -2,7 +2,7 @@
 venv/
 build/
 dist/
-src/python/MusicLibrary.egg-info/
+src/python/pymusiclibrary.egg-info/
 
 windows-x64*.zip
 windows-x86*.zip

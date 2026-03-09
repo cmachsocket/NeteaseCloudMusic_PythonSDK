@@ -14,6 +14,17 @@ ARCH_TO_PATTERN = {
     "macosarm": r"macos-arm64.*\.zip$"
 }
 
+# 架构到环境变量名称的映射
+ARCH_TO_ENV = {
+    "win64": "win64",
+    "win32": "win32", 
+    "winarm": "winarm",
+    "linux64": "linux64",
+    "linuxarm": "linuxarm",
+    "macos64": "macos64",
+    "macosarm": "macosarm"
+}
+
 REPO = "2061360308/MusicLibrary"
 GITHUB_API = f"https://api.github.com/repos/{REPO}/releases/latest"
 
@@ -113,12 +124,18 @@ def main(arch):
             zip_ref.extract(member, base_dir)
 
     print(f"已解压 {filename} 到 {base_dir}")
-    
     print(f"已为 {arch} 架构更换配置")
+    print(f"\n构建 wheel 时请设置环境变量: set MUSICLIB_ARCH={arch}")
+    print(f"或 PowerShell: $env:MUSICLIB_ARCH='{arch}'")
 
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) != 2:
-        print("用法: python script.py <arch>")
+
+    # 处理命令行参数
+    if len(sys.argv) == 1:
+        print("用法: python setLibArch.py <arch>")
+        print("\n支持的架构:")
+        for arch in ARCH_TO_PATTERN.keys():
+            print(f"  - {arch}")
     else:
         main(sys.argv[1])
