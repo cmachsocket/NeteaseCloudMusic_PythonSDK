@@ -27,4 +27,5 @@ ncm = NeteaseCloudMusicApi(NcmProcessEnv())
 ncm.set_cookie(cookie)
 
 response = ncm.request("/song/url", id="33894312", br="320000")
+response = ncm.song_url(id="33894312", br="320000")
 print(response)

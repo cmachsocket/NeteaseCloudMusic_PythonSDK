@@ -1,14 +1,40 @@
-# MusicLibrary python
+# MusicLibrary 语言绑定
 
-## 2026/3/1 项目进展更新（准备复活！）
+![cover](./docs/cover.png)
 
-本次项目重启将采用「上游 C 语言核心库 + 多语言绑定」的技术路线，核心逻辑以 C 语言开发并封装为链接库，再分发适配至 Python 等上层语言。
-目前正处于 C 语言项目的整合阶段，新仓库地址：[MusicLibrary](https://github.com/2061360308/MusicLibrary)（可先收藏关注进度）。需说明的是，这并非代码迁移：新仓库仅专注于 C 语言核心代码的迭代维护，后续 Python 绑定层的代码仍会更新至原有项目仓库。C 语言的优势在于跨语言兼容性极佳，除 Python 外，有能力的开发者也可基于核心库自行绑定其他所需语言。
-> 题外话：若非看中 C 语言的广泛适配性，谁会为了听歌的需求去手写 C 代码、每次验证想法都要走 CMake 编译流程呢？说起来也挺有意思 —— 我已经猜到了，这个 C 语言项目后面上大概率只能是 “幕后角色”：待核心逻辑稳定后，通过多语言绑定的方式用来对外提供能力。说人话：吃灰项目😆。
+<div align="center">
 
-整个开发过程仍以学习实践为核心目标，也借此机会熟悉跨语言开发的全流程。关于音乐平台相关的合规问题不再赘述，核心原则仍是：低调维护，注意影响范围。本次重构后将不再局限于单一平台，计划集成酷狗、网易云、腾讯等多个音乐平台的能力，后续会持续默默维护迭代。
+[![Python Version](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/)
+[![Dart](https://img.shields.io/badge/dart-%E2%98%8E-blue.svg)](https://dart.dev)
+[![Flutter](https://img.shields.io/badge/flutter-%F0%9F%92%99-cyan.svg)](https://flutter.dev)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)](https://github.com/2061360308/MusicLibrary)
 
-## 免责声明
+</div>
+
+这是 [MusicLibrary](https://github.com/2061360308/MusicLibrary) 的多语言绑定项目。MusicLibrary 通过「JavaScript → C → 多语言」架构，将网易云、酷狗等音乐平台 API 统一封装：用 JavaScript/Node.js 实现 API 逻辑，经 Webpack 打包后，由 QuickJS 引擎执行并封装为 C 接口，最终分发到 Python、Dart 等多种语言。
+
+> 💡 **提示**：本项目的多平台预编译库资源、Node.js 源项目详情请查看 [MusicLibrary 主仓库](https://github.com/2061360308/MusicLibrary) 的 Release 和 README 文档。
+
+🌟 如果觉得这个项目对你有帮助，欢迎给主仓库点个 Star！也欢迎大家贡献新的语言绑定，一起让这个项目支持更多编程语言。祝大家用得开心！
+
+## 🌍 支持的语言
+
+| 语言 | 状态 | 使用方式 | 用法介绍 |
+|------|------|----------|----------|
+| Python | 网易云：&emsp;✅ 已支持<br>酷狗音乐：✅ 已支持 | `pip install musiclibrary` | [README]() |
+| Dart | 网易云：&emsp;✅ 已支持<br>酷狗音乐：✅ 已支持 | `pubspec.yaml` 添加依赖 | [README]() |
+
+## 🌟 特性
+
+- ✨ **统一接口**：网易云、酷狗等多个音乐平台使用相同的调用方式
+- 🚀 **高性能**：基于 QuickJS 引擎，执行速度快，内存占用低
+- 🚀 **超轻量**：基于 C 语言预编译库，大小只有2Mb左右
+- 🌐 **跨语言**：支持 Python、Dart 等多种编程语言
+- 💪 **功能丰富**：支持 100+ API 接口，涵盖登录、搜索、播放、评论等完整功能
+- 🔒 **开源免费**：MIT 许可证，可自由使用和修改
+
+## ⚠️ 免责声明
 
 > 1. 本项目仅供学习使用，请尊重版权，请勿利用此项目从事商业行为及非法用途!
 > 2. 使用本项目的过程中可能会产生版权数据。对于这些版权数据，本项目不拥有它们的所有权。为了避免侵权，使用者务必在 24 小时内清除使用本项目的过程中所产 生的版权数据。
@@ -18,33 +44,15 @@
 > 6. 本项目仅用于对技术可行性的探索及研究，不接受任何商业（包括但不限于广告等）合作及捐赠。
 > 7. 如果官方音乐平台觉得本项目不妥，可联系本项目更改或移除。
 
-## 使用说明
 
-> 测试阶段,欢迎提交issue
-> 暂未发布PyPi,请从release下载或者自行构建wheel安装后进行测试
-
-```python
-from MusicLibrary.kuGouMusicApi import KuGouMusicApi, Platform, KugouProcessEnv
-
-kugou = KuGouMusicApi(KugouProcessEnv(platform=Platform.LITE))
-response1 = kugou.top_song()
-response2 = kugou.album_detail(id='10729818')
-print(response)
-
-from MusicLibrary.neteaseCloudMusicApi import NeteaseCloudMusicApi, NcmProcessEnv
-
-ncm = NeteaseCloudMusicApi(None)
-response = ncm.request('/top/song', """{"id": "96"}""")
-print(response)
-```
-
-## 注意事项
+## ⚡ 注意事项
 
 - **线程安全性**: `KuGouMusicApi`,`NeteaseCloudMusicApi`等其他接口对象 均不能跨线程使用,如果需要请为每个线程创建实例。
+- **缓存问题**：原始Node项目是有缓存功能的，相同请求重复请求会直接返回缓存数据，但是在当前项目中，还没有实现缓存功能。
 
-### 特性
+### ✨ 特性
 
-> 因项目为简单学习使用，一下方法实际可用性未测试，欢迎 Pr 指正
+> 只因项目是为了简单学习使用，加上作者精力有限，所以无法逐次测试检查下方所有接口。如果发现有误，欢迎 提出 issue 或者 Pr 指正
 
 | 序号 | KuGouMusic                | NeteaseCloudMusic                        |
 | ---- | ------------------------- | ---------------------------------------- |
@@ -365,40 +373,74 @@ print(response)
 | 315  |                           | 用户的创建歌单列表                       |
 | 316  |                           | 用户的收藏歌单列表                       |
 
-## 构建指南
+## 🙏 致谢
 
-> 上游仓库已完成预编译,只需要拉取对方release资源即可
+本项目的成功离不开许多优秀开源项目的支持，在此由衷感谢这些项目的贡献者们，是他们的共同努力让这个有趣的项目得以实现：
 
-### 构建 Windows AMD64（win_amd64）
+- **QuickJS** - 轻量级 JavaScript 引擎
+- **QuickJS-NG** - QuickJS 的活跃维护分支
+- **各类音乐平台 Node.js API 项目** - 为本项目的核心逻辑提供了基础（出于版权考虑，不在此详细列举）
 
-> 在 powershell 中设置变量的方法为
-> $env:MUSICLIB_ARCH="x86"
+感谢所有为开源社区做出贡献的开发者！
 
-```bash
-rem 1. 准备对应架构的 DLL
-python setLibArch.py AMD64
+## 🔗 相关链接
 
-rem 2. 设置目标架构，构建 wheel
-set MUSICLIB_ARCH=AMD64
-python -m build --wheel
+- **主仓库**：[MusicLibrary](https://github.com/2061360308/MusicLibrary) - C 语言核心库
+- **Python 绑定**：[MusicLibrary Python](https://github.com/2061360308/NeteaseCloudMusic_PythonSDK/tree/main/src/python)
+- **Dart 绑定**：[MusicLibrary Dart](https://github.com/2061360308/NeteaseCloudMusic_PythonSDK/tree/main/src/dart)
+- **QuickJS**：[https://bellard.org/quickjs/](https://bellard.org/quickjs/)
+- **QuickJS-NG**：[https://github.com/quickjs-ng/quickjs](https://github.com/quickjs-ng/quickjs)
+
+## ❓ 常见问题 (FAQ)
+
+### Q1: 这个项目可以用于商业用途吗？
+
+A: 不可以。本项目仅供学习使用，请勿用于商业用途。请尊重版权，支持正版音乐平台。
+
+### Q2: 为什么需要预编译库？
+
+A: 本项目使用 C 语言核心库，需要预先编译为对应平台的二进制文件。你可以从主仓库的 Release 页面下载对应平台的预编译库。
+
+### Q3: 支持哪些音乐平台？
+
+A: 目前支持网易云音乐和酷狗音乐，后续计划支持腾讯音乐等其他平台。
+
+### Q4: 如何贡献新的语言绑定？
+
+A: 欢迎贡献！你可以参考现有的 Python 或 Dart 绑定的实现方式，基于 C 语言接口开发新的语言绑定。完成后提交 Pull Request 即可。
+
+### Q5: 遇到问题怎么办？
+
+A: 欢迎提交 Issue，我们会尽快回复。也欢迎直接贡献代码解决问题。
+
+## 📄 许可证
+
+本项目采用 MIT 许可证开源。
+
+```
+MIT License
+
+Copyright (c) 2026 MusicLibrary
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ```
 
-### 构建 Windows AMDx86（win32）
-
-```bash
-python setLibArch.py x86
-set MUSICLIB_ARCH=x86
-python -m build --wheel
-```
-
-### 构建 Windows ARM64 （win_arm64）
-
-```bash
-python setLibArch.py ARM64
-set MUSICLIB_ARCH=ARM64
-python -m build --wheel
-```
-
-## 贡献
+## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！

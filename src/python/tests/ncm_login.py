@@ -2,18 +2,15 @@ import json,os
 # from .login.loginStatus import load_login_status
 from MusicLibrary.neteaseCloudMusicApi import NeteaseCloudMusicApi, NcmProcessEnv
 
-# user_data_file = os.path.join(os.path.dirname(__file__), "login", "loginStatus.json")
-
-# cookie, userid = load_login_status()
-
-# print("当前cookie:", cookie)
-
 ncm = NeteaseCloudMusicApi(NcmProcessEnv())
 
-# kugou.set_cookie(cookie)
-
-# captcha_response = ncm.request("/captcha/sent", phone="")
+## 1. 获取验证码
+# captcha_response = ncm.captcha_sent(phone="")
 # print(captcha_response)
 
-response = ncm.request("/login/cellphone", phone="", captcha="")
-print(response)
+## 2. 登录
+# response = ncm.login_cellphone(phone="", captcha="")
+# if response.data.get("cookie"):
+#     with open(os.path.join(os.path.dirname(__file__), "ncm_login_cookie.json"), "w", encoding="utf-8") as f:
+#         json.dump({"cookie": response.data.get("cookie")}, f, indent=4)
+# print(response)

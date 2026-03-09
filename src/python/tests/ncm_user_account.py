@@ -26,5 +26,5 @@ ncm = NeteaseCloudMusicApi(NcmProcessEnv())
 
 ncm.set_cookie(cookie)
 
-response = ncm.request("/user/account")
+response = ncm.user_account()
 print(response)
