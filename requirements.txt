@@ -26,7 +26,6 @@ mdurl==0.1.2
 more-itertools==10.8.0
 nh3==0.3.3
 packaging==26.0
-patchelf==0.17.2.4
 platformdirs==4.9.4
 pycparser==3.0
 pyelftools==0.32
