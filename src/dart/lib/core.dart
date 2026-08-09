@@ -130,7 +130,18 @@ String _resolveLibraryPath(String libraryFileName, {String? libraryDir}) {
   final normalized = libraryDir.endsWith(Platform.pathSeparator)
       ? libraryDir.substring(0, libraryDir.length - 1)
       : libraryDir;
-  return '$normalized${Platform.pathSeparator}$libraryFileName';
+  final directPath = '$normalized${Platform.pathSeparator}$libraryFileName';
+  if (File(directPath).existsSync()) {
+    return directPath;
+  }
+
+  final nestedLibPath =
+      '$normalized${Platform.pathSeparator}lib${Platform.pathSeparator}$libraryFileName';
+  if (File(nestedLibPath).existsSync()) {
+    return nestedLibPath;
+  }
+
+  return directPath;
 }
 
 String _binaryName(String baseName) {
@@ -166,7 +177,9 @@ class EngineBindings {
         _destroyContext = library.lookupFunction<_DestroyContextNative, _DestroyContextDart>('destroy_context');
 
   factory EngineBindings({String? libraryDir}) {
-    final lib = DynamicLibrary.open(_resolveLibraryPath(_binaryName('engine'), libraryDir: libraryDir));
+    final libraryPath =
+        _resolveLibraryPath(_binaryName('engine'), libraryDir: libraryDir);
+    final lib = DynamicLibrary.open(libraryPath);
     return EngineBindings._(lib);
   }
 
@@ -238,7 +251,9 @@ class KugouBindings {
         _kugouRequest = library.lookupFunction<_KugouRequestNative, _KugouRequestDart>('kugou_request');
 
   factory KugouBindings({String? libraryDir}) {
-    final lib = DynamicLibrary.open(_resolveLibraryPath(_binaryName('kugou_music_api'), libraryDir: libraryDir));
+    final libraryPath = _resolveLibraryPath(_binaryName('kugou_music_api'),
+        libraryDir: libraryDir);
+    final lib = DynamicLibrary.open(libraryPath);
     return KugouBindings._(lib);
   }
 
@@ -302,7 +317,9 @@ class NcmBindings {
         _generateAnonymousToken = library.lookupFunction<_GenerateAnonymousTokenNative, _GenerateAnonymousTokenDart>('generate_anonimous_token');
 
   factory NcmBindings({String? libraryDir}) {
-    final lib = DynamicLibrary.open(_resolveLibraryPath(_binaryName('ncm_music_api'), libraryDir: libraryDir));
+    final libraryPath =
+        _resolveLibraryPath(_binaryName('ncm_music_api'), libraryDir: libraryDir);
+    final lib = DynamicLibrary.open(libraryPath);
     return NcmBindings._(lib);
   }
 

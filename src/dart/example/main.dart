@@ -1,9 +1,12 @@
-import 'MusicLibrary/music_library.dart';
+import 'package:musiclibrary/music_library.dart';
 
 Map<String, String> cookie = {};
 
 void main() {
-  final kuGou = KuGouMusicApi(env: KugouProcessEnv(platform: KugouPlatform.lite));
+  final kuGou = KuGouMusicApi(
+    env: KugouProcessEnv(platform: KugouPlatform.lite),
+    libraryDir: './libs/lib',
+  );
   kuGou.set_cookie(cookie);
   // final topSongs = kuGou.top_song();
   // print(topSongs);

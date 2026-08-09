@@ -20,6 +20,8 @@ dependencies:
       path: src/dart
 ```
 
+这里的 `src/dart` 是这个仓库中 Dart package 的根目录，真正可供 `package:` 导入的源码位于 `src/dart/lib/`。
+
 或发布到 pub.dev 后：
 
 ```yaml
@@ -32,13 +34,22 @@ dependencies:
 ```dart
 import 'package:musiclibrary/music_library.dart';
 
-final ncm = NeteaseCloudMusicApi();
+final ncm = NeteaseCloudMusicApi(libraryDir: './libs/lib');
 final response = await ncm.playlistMyLike();
 
 if (response.status == 200) {
   final songs = response.body['playlist']['tracks'];
 }
 print(response);
+```
+
+下载并解压预编译动态库后，可直接运行示例：`dart run example/main.dart`
+
+Windows 命令行运行时，如果系统未全局配置这些原生依赖，先把动态库目录加入当前会话的 `PATH`：
+
+```powershell
+$env:PATH = "$PWD\libs\lib;" + $env:PATH
+dart run example/main.dart
 ```
 
 ## 📚 API 文档
@@ -68,7 +79,7 @@ print(response);
 - PowerShell: `fetch_multi_release.ps1 win64:./libs linux64:./libs_linux macos64:./libs_macos`
 - Bash: `./fetch_multi_release.sh win64:/home/user/libs linux64:/home/user/libs_linux macos64:/home/user/libs_macos`
 
-lib 目录只保留 `.dll`、`.so`、`.dylib` 文件。
+下载脚本会把压缩包解压到目标目录下的 `lib/` 子目录，例如 `win64:./libs` 最终动态库位于 `./libs/lib/`。请将这个 `lib/` 路径通过 `libraryDir` 参数传入；`src/dart/lib/` 目录用于 Dart 源码，不存放动态库文件。
 
 ### 支持的架构
 
