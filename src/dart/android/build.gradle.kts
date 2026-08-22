@@ -14,10 +14,8 @@ plugins {
 }
 
 android {
-    // prefab: 默认 AGP 8.0+ 是 true, 显式开启以防老版本默认关掉。
-    // prefab 注入 curl::curl IMPORTED INTERFACE target, native 端直接 link,
-    // prefab.json 里已声明 openssl 依赖传递, 不要再额外 implementation openssl
-    // (会拿到不同版本, 可能 ABI 不一致)。
+    // prefab=true: AGP 8.0+ 默认 true, 显式声明以防老版本默认关掉。
+    // prefab 注入 curl::curl IMPORTED INTERFACE target, native 端直接 link。
     buildFeatures {
         prefab = true
     }
@@ -45,7 +43,6 @@ android {
             // 之前写死 '3.21.0' 导致 [CXX1300] CMake '3.21.0' was not found in SDK,
             // 因为 SDK Manager 包的安装路径 / 版本会随 runner 时间点变化
             // (2026-08-22 CI 复现)。
-            arguments("-DANDROID_STL=c++_shared")
         }
     }
 
@@ -56,6 +53,14 @@ android {
 
     defaultConfig {
         minSdk = 23
+        // 用 ndk.stl 设 c++_shared, 跟 prefab 的 libcurl (shared STL) 一致。
+        // 不能用 externalNativeBuild.cmake.arguments("-DANDROID_STL=c++_shared")——
+        // AGP 9 newDsl 下 arguments() 不被 Kotlin DSL 推断到
+        // (CI 2026-08-23 "Unresolved reference 'arguments'" 复现)。
+        // ndk { stl = "c++_shared" } 是官方推荐用法, 类型安全且 AGP 9 兼容。
+        ndk {
+            stl = "c++_shared"
+        }
     }
 
     // ABI 过滤按需开(默认全架构)
