@@ -27,11 +27,15 @@ android {
     // 跟随宿主 app 的 ndkVersion(主项目 gradle.properties: android.ndkVersion=29.0.14206865)
     ndkVersion = "29.0.14206865"
 
-    // 调用 plugin 自己的 CMakeLists.txt
+    // 调用 plugin 自己的 CMakeLists.txt (cmake_minimum_required=3.21)
     externalNativeBuild {
         cmake {
             path = file("src/main/CMakeLists.txt")
-            version = "3.21.0"
+            // 不指定 version —— 让 AGP 走默认选择 (SDK cmake/ 或 PATH),
+            // CI runner SDK 一般预装 cmake;3.22.1+。
+            // 之前写死 '3.21.0' 导致 [CXX1300] CMake '3.21.0' was not found in SDK,
+            // 因为 SDK Manager 包的安装路径 / 版本会随 runner 时间点变化
+            // (2026-08-22 CI 复现)。
         }
     }
 
