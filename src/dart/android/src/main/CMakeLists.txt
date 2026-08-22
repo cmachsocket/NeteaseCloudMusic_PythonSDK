@@ -12,9 +12,10 @@ project(musiclibrary_android LANGUAGES C)
 
 # ========== 定位 MusicLibrary ==========
 # CMAKE_CURRENT_SOURCE_DIR = NeteaseCloudMusic_PythonSDK/src/dart/android/src/main
-# 上溯 5 级到 flutter_netease_music 根
+# 需要 6 个 ../ 才到 flutter_netease_music 根 (NeteaseCloudMusic_PythonSDK 是同级)
+# 之前写 4 个 ../ 只回到 NeteaseCloudMusic_PythonSDK, 报找不到 (2026-08-22 CI 复现)
 get_filename_component(MUSICLIBRARY_ROOT
-    "${CMAKE_CURRENT_SOURCE_DIR}/../../../../MusicLibrary"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../MusicLibrary"
     ABSOLUTE)
 
 if(NOT EXISTS "${MUSICLIBRARY_ROOT}/CMakeLists.txt")
