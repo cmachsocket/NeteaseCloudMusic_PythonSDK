@@ -14,6 +14,9 @@ plugins {
 }
 
 android {
+    buildFeatures {
+        prefab = true
+    }
     namespace = "com.example.musiclibrary"
     // 跟随宿主 app 的 compileSdk。Flutter plugin loader 会注入
     // `flutter.compileSdkVersion` extension 到 plugin module,跟 path_provider_android

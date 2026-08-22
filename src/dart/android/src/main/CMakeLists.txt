@@ -30,9 +30,16 @@ message(STATUS "musiclibrary: using MusicLibrary at ${MUSICLIBRARY_ROOT}")
 # ========== libcurl via Prefab ==========
 # AGP 8.0+ 默认开启 prefab。Google 官方包 com.android.ndk.thirdparty:curl 在
 # plugin 的 build.gradle.kts 通过 implementation 引入,AGP 会生成 .cxx/.../prefab/modules/curl
-# 并通过 -DCMAKE_FIND_ROOT_PATH 注入。find_package 要用小写 "curl" (AAR 内的 module 名)。
-find_package(curl REQUIRED CONFIG)
-message(STATUS "musiclibrary: libcurl found at ${curl_LIBRARIES}")
+# 并提供 `curl::curl` IMPORTED INTERFACE target (注意: prefab 不提供
+# curlConfig.cmake / curl-config.cmake, 所以 find_package(curl CONFIG) 总是
+# 失败 —— 2026-08-22 CI [CXX1429] 复现)。
+# 直接用 prefab 注入的 curl::curl target, 不要 find_package。
+# prefab 依赖的 openssl 也会自动传递。
+if(NOT TARGET curl::curl)
+    message(FATAL_ERROR "curl::curl target not provided by AGP prefab. "
+        "检查 plugin build.gradle.kts 是否 implementation 了 "
+        "'com.android.ndk.thirdparty:curl:7.85.0-beta-1'")
+endif()
 
 # ========== 子库选择 ==========
 # Android 端只需要 ncm_music_api,关闭 engine / kugou 减少 APK 体积
