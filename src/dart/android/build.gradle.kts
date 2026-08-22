@@ -60,4 +60,5 @@ android {
 // Google 官方 NDK 提供的 prefab 包(自动传递 openssl 依赖)。
 dependencies {
     implementation("com.android.ndk.thirdparty:curl:7.85.0-beta-1")
+    implementation("com.android.ndk.thirdparty:openssl:1.1.1l-beta-1")
 }
