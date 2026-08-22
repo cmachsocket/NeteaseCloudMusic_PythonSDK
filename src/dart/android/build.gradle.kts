@@ -5,7 +5,7 @@
 //   2. 通过 Maven prefab 引入 libcurl 给 native 端使用
 //   3. 声明 plugin bundle 哪些 .so 给 Flutter 工具链打包进 APK
 //
-// 依赖的 sibling submodule: ../../../../MusicLibrary/ (C/JS/QuickJS native 源码)
+// 依赖的 sibling submodule: ../../../../../MusicLibrary/ (C/JS/QuickJS native 源码)
 //
 // 见: src/dart/android/src/main/CMakeLists.txt
 
@@ -14,10 +14,16 @@ plugins {
 }
 
 android {
+    // prefab: 默认 AGP 8.0+ 是 true, 显式开启以防老版本默认关掉。
+    // prefab 注入 curl::curl IMPORTED INTERFACE target, native 端直接 link,
+    // prefab.json 里已声明 openssl 依赖传递, 不要再额外 implementation openssl
+    // (会拿到不同版本, 可能 ABI 不一致)。
     buildFeatures {
         prefab = true
     }
+
     namespace = "com.example.musiclibrary"
+
     // 跟随宿主 app 的 compileSdk。Flutter plugin loader 会注入
     // `flutter.compileSdkVersion` extension 到 plugin module,跟 path_provider_android
     // / sqflite_android 一样的写法。一定要 ≤ 宿主 app 的 compileSdk
@@ -39,6 +45,7 @@ android {
             // 之前写死 '3.21.0' 导致 [CXX1300] CMake '3.21.0' was not found in SDK,
             // 因为 SDK Manager 包的安装路径 / 版本会随 runner 时间点变化
             // (2026-08-22 CI 复现)。
+            arguments("-DANDROID_STL=c++_shared")
         }
     }
 
@@ -48,11 +55,6 @@ android {
     }
 
     defaultConfig {
-    externalNativeBuild {
-        cmake {
-            arguments "-DANDROID_STL=c++_shared"
-        }
-    }
         minSdk = 23
     }
 
@@ -61,8 +63,10 @@ android {
 }
 
 // ========== libcurl via Maven Prefab ==========
-// AGP 8.0+ 默认 prefab=true,可以直接 find_package(CURL CONFIG) 拿到 .so + headers。
-// Google 官方 NDK 提供的 prefab 包(自动传递 openssl 依赖)。
+// AGP prefab=true (上面 buildFeatures 里开), Google 官方 NDK 提供的 prefab 包
+// com.android.ndk.thirdparty:curl 自动生成 curl::curl target 给 native 端 link,
+// prefab.json 已经声明 openssl 依赖传递, 不要额外 implementation openssl
+// (会撞版本, 不同 prefab 包的 openssl 可能 ABI 不一致)。
 dependencies {
     implementation("com.android.ndk.thirdparty:curl:7.85.0-beta-1")
     implementation("com.android.ndk.thirdparty:openssl:1.1.1l-beta-1")
