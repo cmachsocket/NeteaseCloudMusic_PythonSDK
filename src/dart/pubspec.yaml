@@ -5,8 +5,11 @@ version: 0.0.1
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.3.0"
 
 dependencies:
+  flutter:
+    sdk: flutter
   ffi: ^2.1.2
 
 topics:
@@ -32,10 +35,20 @@ license: MIT
 # 可选：添加分类
 category: Multimedia
 
-# 可选：添加平台支持
-platforms:
-  android:
-  ios:
-  linux:
-  macos:
-  windows:
+# ========== Flutter Plugin 声明 ==========
+# Android 端 native build (CMake + NDK) 由 android/ 目录处理。
+# 其他平台暂时没有 dart-only binding(需要预编译 .so)。
+# ffiPlugin=true 表示 plugin 只提供 native lib,不需要 platform channel。
+flutter:
+  plugin:
+    platforms:
+      android:
+        ffiPlugin: true
+      ios:
+        ffiPlugin: true
+      linux:
+        ffiPlugin: true
+      macos:
+        ffiPlugin: true
+      windows:
+        ffiPlugin: true
