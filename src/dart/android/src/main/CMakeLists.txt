@@ -8,6 +8,14 @@
 #   MusicLibrary 主项目: ../../../../MusicLibrary/
 #   quickjs submodule: ../../../../MusicLibrary/quickjs/
 cmake_minimum_required(VERSION 3.21)
+
+# 强制设 STL 为 shared —— libcurl prefab 的 abi.json 声明 stl=c++_shared,
+# plugin build 时如果用 c++_static 会报 [CXX1212] "static STL but requires shared"。
+# 官方做法是 Gradle 那边 ndk.stl = "c++_shared", 但 AGP 9 某些版本下这个设置
+# 不会传给 Prefab 的 STL 选择, 导致错误。在 CMake 这边显式 set 最稳
+# (2026-08-23 CI 复现)。
+set(ANDROID_STL c++_shared)
+
 project(musiclibrary_android LANGUAGES C)
 
 # ========== 定位 MusicLibrary ==========
