@@ -48,6 +48,11 @@ android {
     }
 
     defaultConfig {
+    externalNativeBuild {
+        cmake {
+            arguments "-DANDROID_STL=c++_shared"
+        }
+    }
         minSdk = 23
     }
 
