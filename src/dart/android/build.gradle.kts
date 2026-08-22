@@ -15,9 +15,14 @@ plugins {
 
 android {
     namespace = "com.example.musiclibrary"
-    // 跟随宿主 app 的 compileSdk(主项目用 flutter.compileSdkVersion=37)
-    compileSdk = 37
-    buildToolsVersion = "37.0.0"
+    // 跟随宿主 app 的 compileSdk。Flutter plugin loader 会注入
+    // `flutter.compileSdkVersion` extension 到 plugin module,跟 path_provider_android
+    // / sqflite_android 一样的写法。一定要 ≤ 宿主 app 的 compileSdk
+    // (AGP 不允许 plugin 比 host 编更新, 否则 :app:checkDebugAarMetadata 会 fail
+    // 报 'Dependency :musiclibrary requires ... compile against version 37 or later',
+    // 2026-08-22 CI 复现)。
+    compileSdk = flutter.compileSdkVersion
+    // buildToolsVersion 不写,跟 AGP 默认走(AGP 9.0.1 默认 36.0.0)。
 
     // 跟随宿主 app 的 ndkVersion(主项目 gradle.properties: android.ndkVersion=29.0.14206865)
     ndkVersion = "29.0.14206865"
