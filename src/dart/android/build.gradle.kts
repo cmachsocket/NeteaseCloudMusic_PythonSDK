@@ -31,7 +31,7 @@ android {
     // platforms/android-37.0 + build-tools/37.0.0 对齐。
     // flutter.compileSdkVersion (Flutter 3.47 默认 36) 在 AGP 9.0.1 下会触发
     // 下载 build-tools;36.0.0 + platforms;android-36, 而 /opt/android-sdk 无写权限。
-    //compileSdk = 37
+    compileSdk = 36
     // AGP 9.x 默认 build-tools 36.0.0, 本地没装。显式锁 37.0.0 (本地有)。
     //buildToolsVersion = "37.0.0"
     // buildToolsVersion 不写,跟 AGP 默认走(AGP 9.0.1 默认 36.0.0)。
