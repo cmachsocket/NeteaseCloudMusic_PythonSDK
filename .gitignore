@@ -22,3 +22,17 @@ src/python/tests/ncm_login_cookie.json
 
 src/dart/.dart_tool/
 src/dart/*.dll
+
+# Android Studio / IntelliJ
+src/dart/android/.idea/
+src/dart/android/captures/
+
+# AGP / Gradle per-developer artifacts
+src/dart/android/.cxx/
+src/dart/android/.gradle/
+src/dart/android/.externalNativeBuild/
+src/dart/android/local.properties
+src/dart/android/key.properties
+
+# NDK / ABI-specific CMake outputs (built artifacts, not source)
+src/dart/android/build/

@@ -14,10 +14,11 @@ plugins {
 }
 
 android {
-    // prefab=true: AGP 8.0+ 默认 true, 显式声明以防老版本默认关掉。
-    // prefab 注入 curl::curl IMPORTED INTERFACE target, native 端直接 link。
+    // 2026-08-23 重构:放弃 AGP prefab 引入 libcurl,改为手动链 libcurl.so。
+    // libcurl.so + curl headers 手工抽出在 src/main/jniLibs/<abi>/ + src/main/jniIncludes/curl/。
+    // prefab=false 避免 AGP 触发 prefab CLI / --stl 校验 (它不接受 plugin 的 ndk.stl 设置)。
     buildFeatures {
-        prefab = true
+        prefab = false
     }
 
     namespace = "com.example.musiclibrary"
@@ -53,26 +54,19 @@ android {
 
     defaultConfig {
         minSdk = 23
-        // 用 ndk.stl 设 c++_shared, 跟 prefab 的 libcurl (shared STL) 一致。
-        // 不能用 externalNativeBuild.cmake.arguments("-DANDROID_STL=c++_shared")——
-        // AGP 9 newDsl 下 arguments() 不被 Kotlin DSL 推断到
-        // (CI 2026-08-23 "Unresolved reference 'arguments'" 复现)。
-        // ndk { stl = "c++_shared" } 是官方推荐用法, 类型安全且 AGP 9 兼容。
-        ndk {
-            stl = "c++_shared"
-        }
+        // 2026-08-23 重构:不再走 prefab, ndk.stl 这个 deprecated 设置不再需要。
+        // CMakeLists 里 set(ANDROID_STL c++_shared) 只影响 CMake toolchain 端,
+        // 跟 prefab CLI 无关 (prefab=false)。
+        // ndk { stl = "c++_shared" } 删了也没影响。
     }
 
     // ABI 过滤按需开(默认全架构)
     // ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
 }
 
-// ========== libcurl via Maven Prefab ==========
-// AGP prefab=true (上面 buildFeatures 里开), Google 官方 NDK 提供的 prefab 包
-// com.android.ndk.thirdparty:curl 自动生成 curl::curl target 给 native 端 link,
-// prefab.json 已经声明 openssl 依赖传递, 不要额外 implementation openssl
-// (会撞版本, 不同 prefab 包的 openssl 可能 ABI 不一致)。
-dependencies {
-    implementation("com.android.ndk.thirdparty:curl:7.85.0-beta-1")
-    implementation("com.android.ndk.thirdparty:openssl:1.1.1l-beta-1")
-}
+// 2026-08-23 重构: 不再依赖 AGP prefab 拉 libcurl, libcurl.so 手工抽出在
+// src/main/jniLibs/<abi>/, AGP 默认会打包进 APK。
+// 之前 implementation 了 com.android.ndk.thirdparty:curl + openssl prefab 包,
+// 删了。openssl prefab 也在删掉列表。
+// 运行时 libssl.so / libcrypto.so / libz.so 由 Android system image 提供, 不需要
+// 打包到 APK。
