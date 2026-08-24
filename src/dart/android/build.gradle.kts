@@ -31,13 +31,13 @@ android {
     // platforms/android-37.0 + build-tools/37.0.0 对齐。
     // flutter.compileSdkVersion (Flutter 3.47 默认 36) 在 AGP 9.0.1 下会触发
     // 下载 build-tools;36.0.0 + platforms;android-36, 而 /opt/android-sdk 无写权限。
-    compileSdk = 37
+    //compileSdk = 37
     // AGP 9.x 默认 build-tools 36.0.0, 本地没装。显式锁 37.0.0 (本地有)。
-    buildToolsVersion = "37.0.0"
+    //buildToolsVersion = "37.0.0"
     // buildToolsVersion 不写,跟 AGP 默认走(AGP 9.0.1 默认 36.0.0)。
 
     // 跟随宿主 app 的 ndkVersion(主项目 gradle.properties: android.ndkVersion=29.0.14206865)
-    ndkVersion = "29.0.14206865"
+    //ndkVersion = "29.0.14206865"
 
     // 调用 plugin 自己的 CMakeLists.txt (cmake_minimum_required=3.21)
     externalNativeBuild {
@@ -46,7 +46,7 @@ android {
             // 2026-08-24 shared_build 适配: SDK 没装 cmake, local.properties 的 cmake.dir
             // 指向 plugin 内部 .cmake-sdk/4.4.2 (symlink 到系统 /usr/bin/cmake 4.4.2,
             // AGP 要求目录名跟 cmake --version 主版本一致)。
-            version = "4.4.2"
+            //version = "4.4.2"
         }
     }
     compileOptions {
