@@ -35,11 +35,7 @@ message(STATUS "musiclibrary: using MusicLibrary at ${MUSICLIBRARY_ROOT}")
 # 失败 —— 2026-08-22 CI [CXX1429] 复现)。
 # 直接用 prefab 注入的 curl::curl target, 不要 find_package。
 # prefab 依赖的 openssl 也会自动传递。
-if(NOT TARGET curl::curl)
-    message(FATAL_ERROR "curl::curl target not provided by AGP prefab. "
-        "检查 plugin build.gradle.kts 是否 implementation 了 "
-        "'com.android.ndk.thirdparty:curl:7.85.0-beta-1'")
-endif()
+find_package(curl CONFIG REQUIRED)
 
 # ========== 子库选择 ==========
 # Android 端只需要 ncm_music_api,关闭 engine / kugou 减少 APK 体积

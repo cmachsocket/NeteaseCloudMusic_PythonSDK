@@ -39,6 +39,7 @@ android {
             // 之前写死 '3.21.0' 导致 [CXX1300] CMake '3.21.0' was not found in SDK,
             // 因为 SDK Manager 包的安装路径 / 版本会随 runner 时间点变化
             // (2026-08-22 CI 复现)。
+            arguments.add("-DANDROID_STL=c++_shared")
         }
     }
 
@@ -48,11 +49,6 @@ android {
     }
 
     defaultConfig {
-    externalNativeBuild {
-        cmake {
-            arguments "-DANDROID_STL=c++_shared"
-        }
-    }
         minSdk = 23
     }
 
