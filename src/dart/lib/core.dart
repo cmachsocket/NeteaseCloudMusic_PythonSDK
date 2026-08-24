@@ -124,6 +124,12 @@ class NcmEnvHandle {
 }
 
 String _resolveLibraryPath(String libraryFileName, {String? libraryDir}) {
+  // 2026-08-24 shared_build 适配: Android 上 FFI 直接传给 DynamicLibrary.open,
+  // 系统 lib loader 会自动从 APK 的 lib/<abi>/ 找, 不需要拼接 libraryDir。
+  // 如果传相对路径 '/data/...', Android 找不到, 必须传裸 libname (e.g. "libncm_music_api.so")。
+  if (Platform.isAndroid) {
+    return libraryFileName;
+  }
   if (libraryDir == null || libraryDir.isEmpty) {
     return libraryFileName;
   }
@@ -152,6 +158,12 @@ String _binaryName(String baseName) {
     return 'lib$baseName.dylib';
   }
   if (Platform.isLinux) {
+    return 'lib$baseName.so';
+  }
+  // 2026-08-24 shared_build 适配: Android NDK 把 libncm_music_api.so / libengine.so /
+  // libkugou_music_api.so 注入系统 lib loader, FFI 直接 open libname 即可。
+  // 跟 Linux 同名, 但走的是 dlopen(libname) 自动从 APK 找的语义。
+  if (Platform.isAndroid) {
     return 'lib$baseName.so';
   }
   throw UnsupportedError('Unsupported platform: ${Platform.operatingSystem}');
