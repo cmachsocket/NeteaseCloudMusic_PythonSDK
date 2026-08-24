@@ -47,10 +47,26 @@ class NeteaseCloudMusicApi {
     // 自动补全cookie，并将cookie转换为JSON字符串
     String cookieJson = jsonEncode(cookie.isEmpty ? _cookie : cookie);
 
+    // 2026-08-25: 默认注入 Android UA。
+    // binaryify v4.29.0 util/request.js 里 weapi 默认选 pc UA
+    // ("Mozilla/5.0 Windows NT 10.0 ...")。在 Android 上裸发 pc UA 被云盾
+    // 返 502 (裸 IP 风控),桌面没事是因为桌面 SDK 的 UA 跟实际 IP 匹配。
+    // 强制传 android UA 让 binaryify 走 userAgentMap.api.android:
+    //   'NeteaseMusic/9.1.65.240927161425(9001065);Dalvik/2.1.0 (Linux; U; Android 14; ...)'
+    // 跟云盾一致,避免 502。
+    // 留 query['ua'] 覆盖入口, 用户传了就用用户的。
+    const androidUa = 'NeteaseMusic/9.1.65.240927161425(9001065);Dalvik/2.1.0 '
+        '(Linux; U; Android 14; 23013RK75C Build/UKQ1.230804.001)';
+    final effectiveQuery = <String, dynamic>{
+      ...?query,
+      'ua': (query != null && query.containsKey('ua'))
+          ? query['ua']
+          : androidUa,
+    };
+
     final pathPtr = path.toNativeUtf8();
     final cookiePtr = cookieJson.toNativeUtf8();
-    final paramsPtr =
-        encodeQuery(query ?? const <String, dynamic>{}).toNativeUtf8();
+    final paramsPtr = encodeQuery(effectiveQuery).toNativeUtf8();
 
     try {
       final responsePtr = _bindings.request(
