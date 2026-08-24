@@ -12,7 +12,10 @@
 plugins {
     id("com.android.library")
 }
-
+repositories {
+    google()
+    mavenCentral()
+}
 android {
     buildFeatures {
         prefab = true
@@ -24,7 +27,13 @@ android {
     // (AGP 不允许 plugin 比 host 编更新, 否则 :app:checkDebugAarMetadata 会 fail
     // 报 'Dependency :musiclibrary requires ... compile against version 37 or later',
     // 2026-08-22 CI 复现)。
-    compileSdk = flutter.compileSdkVersion
+    // 2026-08-24 shared_build 适配: 锁 compileSdk=37, 跟宿主 app + 本地 SDK 已装的
+    // platforms/android-37.0 + build-tools/37.0.0 对齐。
+    // flutter.compileSdkVersion (Flutter 3.47 默认 36) 在 AGP 9.0.1 下会触发
+    // 下载 build-tools;36.0.0 + platforms;android-36, 而 /opt/android-sdk 无写权限。
+    compileSdk = 37
+    // AGP 9.x 默认 build-tools 36.0.0, 本地没装。显式锁 37.0.0 (本地有)。
+    buildToolsVersion = "37.0.0"
     // buildToolsVersion 不写,跟 AGP 默认走(AGP 9.0.1 默认 36.0.0)。
 
     // 跟随宿主 app 的 ndkVersion(主项目 gradle.properties: android.ndkVersion=29.0.14206865)
@@ -34,15 +43,12 @@ android {
     externalNativeBuild {
         cmake {
             path = file("src/main/CMakeLists.txt")
-            // 不指定 version —— 让 AGP 走默认选择 (SDK cmake/ 或 PATH),
-            // CI runner SDK 一般预装 cmake;3.22.1+。
-            // 之前写死 '3.21.0' 导致 [CXX1300] CMake '3.21.0' was not found in SDK,
-            // 因为 SDK Manager 包的安装路径 / 版本会随 runner 时间点变化
-            // (2026-08-22 CI 复现)。
-            arguments.add("-DANDROID_STL=c++_shared")
+            // 2026-08-24 shared_build 适配: SDK 没装 cmake, local.properties 的 cmake.dir
+            // 指向 plugin 内部 .cmake-sdk/4.4.2 (symlink 到系统 /usr/bin/cmake 4.4.2,
+            // AGP 要求目录名跟 cmake --version 主版本一致)。
+            version = "4.4.2"
         }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -50,6 +56,16 @@ android {
 
     defaultConfig {
         minSdk = 23
+        // arguments 是 defaultConfig.externalNativeBuild.cmake 下的属性
+        // (ExternalNativeCmakeOptions),不是模块级 cmake block 的。
+        // 模块级 android.externalNativeBuild.cmake 只接 path / version。
+        // 之前 shared_build 在 defaultConfig 嵌套了 externalNativeBuild 是语法错误,
+        // 这里走正确的 defaultConfig.externalNativeBuild.cmake 路径。
+        externalNativeBuild {
+            cmake {
+                arguments.add("-DANDROID_STL=c++_shared")
+            }
+        }
     }
 
     // ABI 过滤按需开(默认全架构)

@@ -22,3 +22,18 @@ src/python/tests/ncm_login_cookie.json
 
 src/dart/.dart_tool/
 src/dart/*.dll
+# ============ Flutter Android plugin native build (GitHub Actions) ============
+# CI 跑父仓库的 ./gradlew :app:assembleDebug, plugin 作为 subproject 参与编译。
+# 这些是 plugin 单独 build / AGP native build 的副产物, 不需要 commit。
+src/dart/android/.cxx/
+src/dart/android/.gradle/
+src/dart/android/build/
+# plugin 独立 build 时自动生成的 wrapper (CI 用父仓库 android/gradlew, 不需要 plugin 自己的)
+src/dart/android/gradlew
+src/dart/android/gradlew.bat
+src/dart/android/gradle/
+# 本地 SDK / Flutter 路径配置 (CI 用 env var, 不 commit)
+src/dart/android/local.properties
+# plugin 单独 build 时需要的 standalone settings (含 Flutter SDK path),
+# CI 不需要 — 父仓库 settings.gradle.kts 走 flutter-plugin-loader 自动 include 这个 plugin
+src/dart/android/settings.gradle.kts

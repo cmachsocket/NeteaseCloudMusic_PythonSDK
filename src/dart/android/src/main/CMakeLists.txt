@@ -62,9 +62,17 @@ set_target_properties(ncm_music_api PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output)
 
 # 暴露给 flutter 工具链:声明 plugin bundle 了哪些 native lib
-set(musiclibrary_bundled_libraries
-    $<TARGET_FILE:ncm_music_api>
-    PARENT_SCOPE)
+# 2026-08-24 shared_build fix: plugin CMakeLists 是 AGP 注入的 top-level, 没有 parent scope,
+# set(... PARENT_SCOPE) 报 "Cannot set ... current scope has no parent"。
+# 单独 build plugin 不需要暴露给宿主 (set_target_properties 已经把 LIBRARY_OUTPUT_DIRECTORY
+# 写到 ncm_music_api target, AGP 自动收集), PARENT_SCOPE 是给历史 Flutter 工具链兼容保留的,
+# 这里只在 plugin 独立 build 时跳过。
+if(DEFINED CMAKE_PARENT_LIST_FILE)
+    # 有 parent (宿主 app CMakeLists 链), 走 PARENT_SCOPE 兼容 Flutter 工具链
+    set(musiclibrary_bundled_libraries
+        $<TARGET_FILE:ncm_music_api>
+        PARENT_SCOPE)
+endif()
 
 # Android 15+ 需要 16KB page size 对齐
 if(ANDROID)
