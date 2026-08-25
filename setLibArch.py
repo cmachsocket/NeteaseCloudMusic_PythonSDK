@@ -11,18 +11,30 @@ ARCH_TO_PATTERN = {
     "linux64": r"linux-x64.*\.zip$",
     "linuxarm": r"linux-arm64.*\.zip$",
     "macos64": r"macos-x64.*\.zip$",
-    "macosarm": r"macos-arm64.*\.zip$"
+    "macosarm": r"macos-arm64.*\.zip$",
+    # 2026-08-25 Android NDK 预编译加进 zip 流程。
+    # .zip 里 lib/<abi>/{libncm_music_api,libengine,libqjs,libcurl}.so
+    # 解压后脚本会 copy 到 src/dart/android/src/main/jniLibs/<abi>/,不走 zip 自带结构。
+    "android64": r"android-arm64-v8a.*\.zip$",
+    "android64x86": r"android-x86_64.*\.zip$",
+    "androidarm": r"android-armeabi-v7a.*\.zip$",
+    "androidx86": r"android-x86.*\.zip$"
 }
 
 # 架构到环境变量名称的映射
 ARCH_TO_ENV = {
     "win64": "win64",
-    "win32": "win32", 
+    "win32": "win32",
     "winarm": "winarm",
     "linux64": "linux64",
     "linuxarm": "linuxarm",
     "macos64": "macos64",
-    "macosarm": "macosarm"
+    "macosarm": "macosarm",
+    # Android ABI → jniLibs 子目录名 (必须跟 NDK 标准 ABI 名一致)
+    "android64": "arm64-v8a",
+    "android64x86": "x86_64",
+    "androidarm": "armeabi-v7a",
+    "androidx86": "x86"
 }
 
 REPO = "2061360308/MusicLibrary"
@@ -93,6 +105,33 @@ def main(arch):
             os.remove(local_filename)
 
         filename = remote_filename
+
+    # 2026-08-25 Android zip 走独立路径: copy 到 plugin 的 jniLibs,
+    # 不走 python/MusicLibrary/include + lib 那套 (那套是给 python wheel 用的)。
+    if arch.startswith("android"):
+        android_abi = ARCH_TO_ENV[arch]
+        jni_libs_dir = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "src", "dart", "android", "src", "main", "jniLibs", android_abi,
+        )
+        os.makedirs(jni_libs_dir, exist_ok=True)
+
+        import zipfile
+        with zipfile.ZipFile(filename, "r") as zip_ref:
+            for member in zip_ref.infolist():
+                name = member.filename.replace("\\", "/")
+                # Android zip 预期结构: lib/<abi>/<libname>.so
+                # 提取后缀 .so 直接 copy 到 jni_libs_dir
+                basename = os.path.basename(name)
+                if not basename.endswith(".so"):
+                    continue
+                with zip_ref.open(member) as src, open(os.path.join(jni_libs_dir, basename), "wb") as dst:
+                    shutil.copyfileobj(src, dst)
+        print(f"已解压 {filename} → {jni_libs_dir}")
+        print(f"已为 {arch} (ABI={android_abi}) 嵌入预编译 .so")
+        print(f"\nAndroid plugin 现在不再现场编译 MusicLibrary。")
+        print(f"如需重新生成 .so,在 ../MusicLibrary 跑: ANDROID_NDK_HOME=... ./scripts/build-android.sh --all")
+        return
 
     # 删除 MusicLibrary/include 和 lib 目录
     for subdir in ["include", "lib"]:
