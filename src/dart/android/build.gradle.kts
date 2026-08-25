@@ -22,12 +22,8 @@ repositories {
 }
 android {
     namespace = "com.example.musiclibrary"
-    // 跟随宿主 app 的 compileSdk。Flutter plugin loader 会注入
-    // `flutter.compileSdkVersion` extension 到 plugin module,跟 path_provider_android
-    // / sqflite_android 一样的写法。一定要 ≤ 宿主 app 的 compileSdk。
-    // 2026-08-25 本机只有 android-37 + build-tools/37.0.0,锁 37 (注释曾写过,但被
-    // reset 成 36 了)。AGP 9.0.1 默认 36,本地没装会试图下载失败 (SDK 目录只读)。
-    compileSdk = 37
+  
+    compileSdk = 36
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
