@@ -34,6 +34,10 @@ EXPECTED_LIBS = (
     "libengine.so",
     "libqjs.so",
     "libcurl.so",
+    # 2026-08-25: libcurl.so 运行时依赖 libssl / libcrypto (NDK prefab openssl 包)。
+    # prefab 模块拆成 modules/ssl/ + modules/crypto/ 两个, 但 aar 是同一个 openssl 包。
+    "libssl.so",
+    "libcrypto.so",
 )
 SUPPORTED_ABIS = ("arm64-v8a", "x86_64", "armeabi-v7a", "x86")
 
