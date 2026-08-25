@@ -28,16 +28,13 @@ PYSDK_DIR = SCRIPT_DIR.parent
 MUSICLIBRARY_DIST = PYSDK_DIR.parent / "MusicLibrary" / "build" / "android" / "dist"
 JNI_LIBS = PYSDK_DIR / "src" / "dart" / "android" / "src" / "main" / "jniLibs"
 
+# 2026-08-25 迁移 vvb2060/curl-android: curl + BoringSSL + nghttp2/3 + ngtcp2
+# 全部静态编进 libengine.so,APK 不再需要 libcurl.so / libssl.so / libcrypto.so。
 EXPECTED_LIBS = (
     "libncm_music_api.so",
     "libkugou_music_api.so",   # 2026-08-25: Android 改为一起 build (不关 KUGOU)
     "libengine.so",
     "libqjs.so",
-    "libcurl.so",
-    # 2026-08-25: libcurl.so 运行时依赖 libssl / libcrypto (NDK prefab openssl 包)。
-    # prefab 模块拆成 modules/ssl/ + modules/crypto/ 两个, 但 aar 是同一个 openssl 包。
-    "libssl.so",
-    "libcrypto.so",
 )
 SUPPORTED_ABIS = ("arm64-v8a", "x86_64", "armeabi-v7a", "x86")
 
